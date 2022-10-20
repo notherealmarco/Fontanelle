@@ -1,0 +1,141 @@
+openapi: 3.0.0
+info:
+  title: Fontanelle
+  description: |
+    This is an API for the Fontanelle project.
+  version: 0.0.1
+paths:
+  /foutains:
+    get:
+      summary: show the map of the fountains nearby
+      description: |
+        Obtain a list of all the fountains of city nearby
+      parameters:
+        - name: latitude
+          in: query
+          required: true
+          description: the latitude of the user
+          schema:
+            type: number
+        - name: longitude
+          in: query
+          required: true
+          description: the longitude of the user
+          schema:
+            type: number
+        - name: range
+          in: query
+          required: true
+          description: the range in meters to look for
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The list of fountains
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    status:
+                      type: string
+                      enum:
+                        - working
+                        - faulty
+                    location:
+                      type: object
+                      properties:
+                        latitude:
+                          type: number
+                        longitude:
+                          type: number
+        "204":
+          description: |
+            There are no fountains avalilable
+            in the selected area
+    post:
+      summary: add a missing fountain
+      description: this method allows to add a missing fountain to the database
+      parameters:
+        - name: latitude
+          in: query
+          required: true
+          description: the latitude of the user
+          schema:
+            type: number
+        - name: longitude
+          in: query
+          required: true
+          description: the longitude of the user
+          schema:
+            type: number
+        - name: status
+          in: query
+          required: true
+          description: the working state of the fountain
+          schema:
+            type: string
+            enum:
+              - working
+              - faulty
+      responses:
+        "201":
+        
+          description: a new fountain has been added successfully and returns the id
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    description: the id of the fountain
+                    type: integer
+
+  /fountains/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: The fountain id
+        schema:
+          type: integer
+    put:
+      summary: add or update a fountain
+      description: add a new fountain with the given id or update if it exists
+      parameters:
+        - name: status
+          in: query
+          description: the new status of the fountain
+          schema:
+            type: string
+            enum:
+              - working
+              - faulty
+        - name: location
+          in: query
+          description: the new location
+          schema:
+            type: object
+            properties:
+              latitude:
+                type: number
+                description: the new latitude
+              longitude:
+                type: number
+                description: the new longitude
+      responses:
+        "200":
+          description: An existing fountain is modified
+        "201":
+          description: A new fountain is added
+    delete:
+      summary: delete an existing fountain
+      responses:
+        "410":
+          description: the fountain is gone
+        "404":
+          description: the fountain id does not exists
+        
